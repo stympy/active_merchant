@@ -63,9 +63,9 @@ module ActiveMerchant #:nodoc:
       def store(creditcard, options = {})
         case creditcard.number
         when '1'
-          Response.new(true, SUCCESS_MESSAGE, {:billingid => '1'}, :test => true, :authorization => AUTHORIZATION )
+          BogusResponse.new(true, SUCCESS_MESSAGE, {:billingid => '1'}, :test => true, :authorization => AUTHORIZATION )
         when '2'
-          Response.new(false, FAILURE_MESSAGE, {:billingid => nil, :error => FAILURE_MESSAGE }, :test => true)
+          BogusResponse.new(false, FAILURE_MESSAGE, {:billingid => nil, :error => FAILURE_MESSAGE }, :test => true)
         else
           raise Error, ERROR_MESSAGE
         end              
@@ -74,13 +74,25 @@ module ActiveMerchant #:nodoc:
       def unstore(identification, options = {})
         case identification
         when '1'
-          Response.new(true, SUCCESS_MESSAGE, {}, :test => true)
+          BogusResponse.new(true, SUCCESS_MESSAGE, {}, :test => true)
         when '2'
-          Response.new(false, FAILURE_MESSAGE, {:error => FAILURE_MESSAGE },:test => true)
+          BogusResponse.new(false, FAILURE_MESSAGE, {:error => FAILURE_MESSAGE },:test => true)
         else
           raise Error, UNSTORE_ERROR_MESSAGE
         end
       end
+      
+      # Fake an update by calling store
+      def update(creditcard, options = {})
+        store(creditcard, options)
+      end
     end
+    
+    class BogusResponse < Response
+      def token
+        success? ? 'success' : ''
+      end
+    end
+    
   end
 end

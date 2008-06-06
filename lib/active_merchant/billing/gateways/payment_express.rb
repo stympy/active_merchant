@@ -93,6 +93,16 @@ module ActiveMerchant #:nodoc:
         commit(:validate, request)
       end
       
+      # Unsupported
+      def unstore(identification, options = {})
+        # no-op
+      end
+      
+      # Unsupported.  Just create a new record and return it.
+      def update(identification, creditcard, options = {})
+        store(creditcard, options)
+      end  
+      
       private
       
       def build_purchase_or_authorization_request(money, options)

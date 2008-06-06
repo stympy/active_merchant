@@ -68,9 +68,8 @@ module ActiveMerchant #:nodoc:
         commit(nil, nil, post)
       end
     
-      def delete(vault_id)
-        post = {}
-        post[:customer_vault] = "delete_customer"
+      def delete(vault_id, options = {})
+        post = options.merge(:customer_vault => "delete_customer")
         add_customer_vault_id(post, vault_id)         
         commit(nil, nil, post)
       end
@@ -160,7 +159,7 @@ module ActiveMerchant #:nodoc:
         
         response = parse( ssl_post(URL, post_data(action,parameters)) )
 
-        Response.new(response["response"] == "1", message_from(response), response, 
+        BraintreeResponse.new(response["response"] == "1", message_from(response), response, 
           :authorization => response["transactionid"],
           :test => test?,
           :cvv_result => response["cvvresponse"],
@@ -208,6 +207,14 @@ module ActiveMerchant #:nodoc:
       end
     end
     
+    class BraintreeResponse < Response
+      # add a method to response so we can easily get the token
+      # for vault transactions
+      def token
+        @params["customer_vault_id"]
+      end
+    end
+
     BrainTreeGateway = BraintreeGateway
   end
 end
