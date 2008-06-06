@@ -36,6 +36,11 @@ module ActiveMerchant #:nodoc:
         :credit => 4
       }
       
+<<<<<<< HEAD:lib/active_merchant/billing/gateways/secure_pay_au.rb
+=======
+      SUCCESS_CODES = [ '00', '08', '11', '16', '77' ]
+      
+>>>>>>> shopify/master:lib/active_merchant/billing/gateways/secure_pay_au.rb
       def initialize(options = {})
         requires!(options, :login, :password)
         @options = options
@@ -109,7 +114,11 @@ module ActiveMerchant #:nodoc:
       end
       
       def success?(response)
+<<<<<<< HEAD:lib/active_merchant/billing/gateways/secure_pay_au.rb
         response[:response_code] == "00"
+=======
+        SUCCESS_CODES.include?(response[:response_code])
+>>>>>>> shopify/master:lib/active_merchant/billing/gateways/secure_pay_au.rb
       end
       
       def authorization_from(response)

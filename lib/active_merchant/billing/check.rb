@@ -9,6 +9,7 @@ module ActiveMerchant #:nodoc:
     class Check
       include Validateable
       
+<<<<<<< HEAD:lib/active_merchant/billing/check.rb
       attr_accessor :name, :routing_number, :account_number, :account_holder_type, :account_type
       
       def initialize(args={})
@@ -22,6 +23,25 @@ module ActiveMerchant #:nodoc:
       
       def validate
         for attr in [:name, :routing_number, :account_number]
+=======
+      attr_accessor :first_name, :last_name, :routing_number, :account_number, :account_holder_type, :account_type, :number
+      
+      def name
+        @name ||= "#{@first_name} #{@last_name}".strip
+      end
+      
+      def name=(value)
+        return if value.blank?
+
+        @name = value
+        segments = value.split(' ')
+        @last_name = segments.pop
+        @first_name = segments.join(' ')
+      end
+      
+      def validate
+        [:name, :routing_number, :account_number].each do |attr|
+>>>>>>> shopify/master:lib/active_merchant/billing/check.rb
           errors.add(attr, "cannot be empty") if self.send(attr).blank?
         end
         

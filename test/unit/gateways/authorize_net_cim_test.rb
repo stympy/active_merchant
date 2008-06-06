@@ -58,6 +58,10 @@ class AuthorizeNetCimTest < Test::Unit::TestCase
     assert_instance_of Response, response
     assert_success response
     assert_equal @customer_profile_id, response.authorization
+<<<<<<< HEAD:test/unit/gateways/authorize_net_cim_test.rb
+=======
+    assert_equal "Successful.", response.message
+>>>>>>> shopify/master:test/unit/gateways/authorize_net_cim_test.rb
   end
 
   def test_should_create_customer_payment_profile_request

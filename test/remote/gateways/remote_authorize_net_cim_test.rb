@@ -58,6 +58,10 @@ class AuthorizeNetCimTest < Test::Unit::TestCase
     assert response.test?
     assert_success response
     assert_equal @customer_profile_id, response.authorization
+<<<<<<< HEAD:test/remote/gateways/remote_authorize_net_cim_test.rb
+=======
+    assert_equal 'Successful.', response.message
+>>>>>>> shopify/master:test/remote/gateways/remote_authorize_net_cim_test.rb
     assert response.params['profile']['payment_profiles']['customer_payment_profile_id'] =~ /\d+/, 'The customer_payment_profile_id should be a number'
     assert_equal "XXXX#{@credit_card.last_digits}", response.params['profile']['payment_profiles']['payment']['credit_card']['card_number'], "The card number should contain the last 4 digits of the card we passed in #{@credit_card.last_digits}"
     assert_equal @profile[:merchant_customer_id], response.params['profile']['merchant_customer_id']

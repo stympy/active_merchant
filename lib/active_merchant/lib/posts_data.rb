@@ -22,6 +22,12 @@ module ActiveMerchant #:nodoc:
     end
     
     def ssl_post(url, data, headers = {})
+<<<<<<< HEAD:lib/active_merchant/lib/posts_data.rb
+=======
+      # Ruby 1.8.4 doesn't automatically set this header
+      headers['Content-Type'] ||= "application/x-www-form-urlencoded"
+      
+>>>>>>> shopify/master:lib/active_merchant/lib/posts_data.rb
       uri   = URI.parse(url)
 
       http = Net::HTTP.new(uri.host, uri.port) 

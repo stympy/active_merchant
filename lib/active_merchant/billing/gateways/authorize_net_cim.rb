@@ -628,7 +628,11 @@ module ActiveMerchant #:nodoc:
         
         response_params = parse(action, xml)
 
+<<<<<<< HEAD:lib/active_merchant/billing/gateways/authorize_net_cim.rb
         message = response_params['messages']['message'] || response_params['messages']['message']['text']
+=======
+        message = response_params['messages']['message']['text']
+>>>>>>> shopify/master:lib/active_merchant/billing/gateways/authorize_net_cim.rb
         test_mode = test? || message =~ /Test Mode/
         success = response_params['messages']['result_code'] == 'Ok'
 

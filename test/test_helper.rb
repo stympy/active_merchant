@@ -127,11 +127,29 @@ module Test
           :type => 'visa'
         }.update(options)
 
+<<<<<<< HEAD:test/test_helper.rb
         ActiveMerchant::Billing::CreditCard.new(defaults)
+=======
+        CreditCard.new(defaults)
+      end
+      
+      def check(options = {})
+        defaults = {
+          :name => 'Jim Smith',
+          :routing_number => '244183602', 
+          :account_number => '15378535', 
+          :account_holder_type => 'personal', 
+          :account_type => 'checking', 
+          :number => '1'
+        }.update(options)
+        
+        Check.new(defaults)
+>>>>>>> shopify/master:test/test_helper.rb
       end
       
       def address(options = {})
         { 
+<<<<<<< HEAD:test/test_helper.rb
           :name => 'Jim Smith',
           :address1 => '1234 My Street',
           :address2 => 'Apt 1',
@@ -141,6 +159,18 @@ module Test
           :zip => 'K1C2N6',
           :country => 'CA',
           :phone => '(555)555-5555'
+=======
+          :name     => 'Jim Smith',
+          :address1 => '1234 My Street',
+          :address2 => 'Apt 1',
+          :company  => 'Widgets Inc',
+          :city     => 'Ottawa',
+          :state    => 'ON',
+          :zip      => 'K1C2N6',
+          :country  => 'CA',
+          :phone    => '(555)555-5555',
+          :fax      => '(555)555-6666'
+>>>>>>> shopify/master:test/test_helper.rb
         }.update(options)
       end
       

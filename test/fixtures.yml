@@ -14,6 +14,14 @@ authorize_net:
   login: X
   password: Y
 
+<<<<<<< HEAD:test/fixtures.yml
+=======
+beanstream:
+  login: merchant id
+  user: username
+  password: password
+
+>>>>>>> shopify/master:test/fixtures.yml
 braintree:
   login: demo
   password: password
@@ -236,6 +244,13 @@ realex_mastercard_coms_error:
   year: '2020'
   verification_value: '123'
 
+<<<<<<< HEAD:test/fixtures.yml
+=======
+sage:
+  login: login
+  password: password
+
+>>>>>>> shopify/master:test/fixtures.yml
 secure_pay:
   login: LOGIN
   password: PASSWORD

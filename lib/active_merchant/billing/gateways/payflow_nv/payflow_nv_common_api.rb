@@ -27,8 +27,13 @@ module ActiveMerchant #:nodoc:
         base.retry_safe = true
       end
 
+<<<<<<< HEAD:lib/active_merchant/billing/gateways/payflow_nv/payflow_nv_common_api.rb
       TEST_URL = 'https://pilot-payflowpro.verisign.com'
       LIVE_URL = 'https://payflowpro.verisign.com'
+=======
+      TEST_URL = 'https://pilot-payflowpro.paypal.com'
+      LIVE_URL = 'https://payflowpro.paypal.com'
+>>>>>>> shopify/master:lib/active_merchant/billing/gateways/payflow_nv/payflow_nv_common_api.rb
 
       CARD_MAPPING = {
         :visa => 'Visa',
