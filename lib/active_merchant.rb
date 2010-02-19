@@ -23,7 +23,14 @@
                     
 $:.unshift File.dirname(__FILE__)
 
-require 'active_support'
+begin
+  # newer versions of active_support (>= 3.0)
+  require 'active_support/all'
+rescue LoadError
+  # support older versions of active_support
+  gem 'active_support'
+end
+
 require 'builder'
 require 'cgi'
 require 'rexml/document'
