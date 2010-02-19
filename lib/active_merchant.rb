@@ -25,10 +25,16 @@ $:.unshift File.dirname(__FILE__)
 
 begin
   # newer versions of active_support (>= 3.0)
-  require 'active_support/all'
+  require 'active_support/hash_with_indifferent_access'
+  require 'active_support/core_ext/class/inheritable_attributes'
+  require 'active_support/core_ext/class/attribute_accessors'
+  require 'active_support/core_ext/class/delegating_attributes'
+  require 'active_support/core_ext/module/attribute_accessors'
+  require 'active_support/core_ext/kernel/requires'
+  require 'active_support/inflector'
 rescue LoadError
   # support older versions of active_support
-  gem 'active_support'
+  require "active_support"
 end
 
 require 'builder'
