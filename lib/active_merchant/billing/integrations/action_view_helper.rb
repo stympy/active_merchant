@@ -43,7 +43,7 @@ module ActiveMerchant #:nodoc:
           raise ArgumentError, "Missing block" unless block_given?
 
           integration_module = ActiveMerchant::Billing::Integrations.const_get(options.delete(:service).to_s.classify)
-
+          
           if ignore_binding?
             concat(form_tag(integration_module.service_url, options.delete(:html) || {}))
           else
@@ -71,7 +71,7 @@ module ActiveMerchant #:nodoc:
         
         private
         def ignore_binding?
-          ActionPack::VERSION::MAJOR >= 2 && ActionPack::VERSION::MINOR >= 2
+          ActionPack::VERSION::MAJOR >= 3 || (ActionPack::VERSION::MAJOR >= 2 && ActionPack::VERSION::MINOR >= 2)
         end
       end
     end
