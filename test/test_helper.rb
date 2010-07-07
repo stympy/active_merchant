@@ -1,28 +1,15 @@
 #!/usr/bin/env ruby
-$:.unshift(File.dirname(__FILE__) + '/../lib')
-$:.unshift(File.dirname(__FILE__) + '/mocks')
-$:.unshift(File.dirname(__FILE__) + '/extra')
+$:.unshift File.expand_path('../../lib', __FILE__)
 
 require 'rubygems'
-require 'money'
-require 'yaml'
-require 'net/http'
-require 'net/https'
 require 'test/unit'
-require 'binding_of_caller'
-require 'breakpoint'
-require 'openssl'
+require 'money'
 require 'mocha'
-require 'digest/md5'
-
-require File.dirname(__FILE__) + '/../lib/active_merchant'
+require 'yaml'
+require 'active_merchant'
 
 begin
-  if respond_to? :gem
-    gem 'actionpack'
-  else
-    require_gem 'actionpack'
-  end
+  gem 'actionpack'
 rescue LoadError
   raise StandardError, "The view tests need ActionPack installed as gem to run"
 end
@@ -33,8 +20,18 @@ require 'active_merchant/billing/integrations/action_view_helper'
 
 ActiveMerchant::Billing::Base.mode = :test
 
+# Test gateways
+class SimpleTestGateway < ActiveMerchant::Billing::Gateway
+end
+
+class SubclassGateway < SimpleTestGateway
+end
+
+
 module ActiveMerchant
   module Assertions
+    AssertionClass = RUBY_VERSION > '1.9' ? MiniTest::Assertion : Test::Unit::AssertionFailedError
+    
     def assert_field(field, value)
       clean_backtrace do 
         assert_equal value, @helper.fields[field]
@@ -97,107 +94,91 @@ module ActiveMerchant
     
     private
     def clean_backtrace(&block)
-      yield
-    rescue Test::Unit::AssertionFailedError => e
+      yield    
+    rescue AssertionClass => e
       path = File.expand_path(__FILE__)
-      raise Test::Unit::AssertionFailedError, e.message, e.backtrace.reject { |line| File.expand_path(line) =~ /#{path}/ }
+      raise AssertionClass, e.message, e.backtrace.reject { |line| File.expand_path(line) =~ /#{path}/ }
+    end
+  end
+  
+  module Fixtures
+    HOME_DIR = RUBY_PLATFORM =~ /mswin32/ ? ENV['HOMEPATH'] : ENV['HOME'] unless defined?(HOME_DIR)
+    LOCAL_CREDENTIALS = File.join(HOME_DIR.to_s, '.active_merchant/fixtures.yml') unless defined?(LOCAL_CREDENTIALS)
+    DEFAULT_CREDENTIALS = File.join(File.dirname(__FILE__), 'fixtures.yml') unless defined?(DEFAULT_CREDENTIALS)
+    
+    private
+    def credit_card(number = '4242424242424242', options = {})
+      defaults = {
+        :number => number,
+        :month => 9,
+        :year => Time.now.year + 1,
+        :first_name => 'Longbob',
+        :last_name => 'Longsen',
+        :verification_value => '123',
+        :type => 'visa'
+      }.update(options)
+
+      Billing::CreditCard.new(defaults)
+    end
+    
+    def check(options = {})
+      defaults = {
+        :name => 'Jim Smith',
+        :routing_number => '244183602', 
+        :account_number => '15378535', 
+        :account_holder_type => 'personal', 
+        :account_type => 'checking', 
+        :number => '1'
+      }.update(options)
+      
+      Billing::Check.new(defaults)
+    end
+    
+    def address(options = {})
+      { 
+        :name     => 'Jim Smith',
+        :address1 => '1234 My Street',
+        :address2 => 'Apt 1',
+        :company  => 'Widgets Inc',
+        :city     => 'Ottawa',
+        :state    => 'ON',
+        :zip      => 'K1C2N6',
+        :country  => 'CA',
+        :phone    => '(555)555-5555',
+        :fax      => '(555)555-6666'
+      }.update(options)
+    end
+    
+    def all_fixtures
+      @@fixtures ||= load_fixtures
+    end
+    
+    def fixtures(key)
+      data = all_fixtures[key] || raise(StandardError, "No fixture data was found for '#{key}'")
+      
+      data.dup
+    end
+        
+    def load_fixtures
+      file = File.exists?(LOCAL_CREDENTIALS) ? LOCAL_CREDENTIALS : DEFAULT_CREDENTIALS
+      yaml_data = YAML.load(File.read(file))
+      symbolize_keys(yaml_data)
+    
+      yaml_data
+    end
+    
+    def symbolize_keys(hash)
+      return unless hash.is_a?(Hash)
+      
+      hash.symbolize_keys!
+      hash.each{|k,v| symbolize_keys(v)}
     end
   end
 end
 
-module Test
-  module Unit
-    class TestCase
-      LOCAL_CREDENTIALS = ENV['HOME'] + '/.active_merchant/fixtures.yml' unless defined?(LOCAL_CREDENTIALS)
-      DEFAULT_CREDENTIALS = File.dirname(__FILE__) + '/fixtures.yml' unless defined?(DEFAULT_CREDENTIALS)
-      
-      include ActiveMerchant::Billing
-      include ActiveMerchant::Assertions
-      include ActiveMerchant::Utils
-
-      private
-      def credit_card(number = '4242424242424242', options = {})
-        defaults = {
-          :number => number,
-          :month => 9,
-          :year => Time.now.year + 1,
-          :first_name => 'Longbob',
-          :last_name => 'Longsen',
-          :verification_value => '123',
-          :type => 'visa'
-        }.update(options)
-
-<<<<<<< HEAD:test/test_helper.rb
-        ActiveMerchant::Billing::CreditCard.new(defaults)
-=======
-        CreditCard.new(defaults)
-      end
-      
-      def check(options = {})
-        defaults = {
-          :name => 'Jim Smith',
-          :routing_number => '244183602', 
-          :account_number => '15378535', 
-          :account_holder_type => 'personal', 
-          :account_type => 'checking', 
-          :number => '1'
-        }.update(options)
-        
-        Check.new(defaults)
->>>>>>> shopify/master:test/test_helper.rb
-      end
-      
-      def address(options = {})
-        { 
-<<<<<<< HEAD:test/test_helper.rb
-          :name => 'Jim Smith',
-          :address1 => '1234 My Street',
-          :address2 => 'Apt 1',
-          :company => 'Widgets Inc',
-          :city => 'Ottawa',
-          :state => 'ON',
-          :zip => 'K1C2N6',
-          :country => 'CA',
-          :phone => '(555)555-5555'
-=======
-          :name     => 'Jim Smith',
-          :address1 => '1234 My Street',
-          :address2 => 'Apt 1',
-          :company  => 'Widgets Inc',
-          :city     => 'Ottawa',
-          :state    => 'ON',
-          :zip      => 'K1C2N6',
-          :country  => 'CA',
-          :phone    => '(555)555-5555',
-          :fax      => '(555)555-6666'
->>>>>>> shopify/master:test/test_helper.rb
-        }.update(options)
-      end
-      
-      def all_fixtures
-        @@fixtures ||= load_fixtures
-      end
-      
-      def fixtures(key)
-        data = all_fixtures[key] || raise(StandardError, "No fixture data was found for '#{key}'")
-        
-        data.dup
-      end
-          
-      def load_fixtures
-        file = File.exists?(LOCAL_CREDENTIALS) ? LOCAL_CREDENTIALS : DEFAULT_CREDENTIALS
-        yaml_data = YAML.load(File.read(file))
-        symbolize_keys(yaml_data)
-      
-        yaml_data
-      end
-      
-      def symbolize_keys(hash)
-        return unless hash.is_a?(Hash)
-        
-        hash.symbolize_keys!
-        hash.each{|k,v| symbolize_keys(v)}
-      end
-    end
-  end
+Test::Unit::TestCase.class_eval do
+  include ActiveMerchant::Billing
+  include ActiveMerchant::Assertions
+  include ActiveMerchant::Utils
+  include ActiveMerchant::Fixtures
 end

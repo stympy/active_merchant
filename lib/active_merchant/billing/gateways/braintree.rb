@@ -1,8 +1,9 @@
-require File.join(File.dirname(__FILE__), '..', 'check.rb')
+require File.dirname(__FILE__) + '/braintree/braintree_common'
 
 module ActiveMerchant #:nodoc:
   module Billing #:nodoc:
     class BraintreeGateway < Gateway
+<<<<<<< HEAD
       URL = 'https://secure.braintreepaymentgateway.com/api/transact.php'
     
       self.supported_countries = ['US']
@@ -182,30 +183,19 @@ module ActiveMerchant #:nodoc:
           "This transaction has been approved"
         when "DECLINE"
           "This transaction has been declined"
+=======
+      include BraintreeCommon
+      
+      def self.new(options={})
+        if options.has_key?(:login)
+          BraintreeOrangeGateway.new(options)
+>>>>>>> edd9eb5cf7929f734f54ca7de6a82fd14fcb4138
         else
-          response["responsetext"]
-        end
-      end
-      
-      def post_data(action, parameters = {})
-        post = {}
-        post[:username]      = @options[:login]
-        post[:password]   = @options[:password]
-        post[:type]       = action if action
-
-        request = post.merge(parameters).map {|key,value| "#{key}=#{CGI.escape(value.to_s)}"}.join("&")
-        request        
-      end
-      
-      def determine_funding_source(source)
-        case 
-        when source.is_a?(String) then :vault
-        when CreditCard.card_companies.keys.include?(card_brand(source)) then :credit_card
-        when card_brand(source) == 'check' then :check
-        else raise ArgumentError, "Unsupported funding source provided"
+          BraintreeBlueGateway.new(options)
         end
       end
     end
+<<<<<<< HEAD
     
     class BraintreeResponse < Response
       # add a method to response so we can easily get the token
@@ -216,6 +206,7 @@ module ActiveMerchant #:nodoc:
     end
 
     BrainTreeGateway = BraintreeGateway
+=======
+>>>>>>> edd9eb5cf7929f734f54ca7de6a82fd14fcb4138
   end
 end
-

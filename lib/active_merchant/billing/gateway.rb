@@ -93,7 +93,7 @@ module ActiveMerchant #:nodoc:
       
       # The application making the calls to the gateway
       # Useful for things like the PayPal build notation (BN) id fields
-      class_inheritable_accessor :application_id
+      superclass_delegating_accessor :application_id
       self.application_id = 'ActiveMerchant'
       
       attr_reader :options
@@ -130,15 +130,17 @@ module ActiveMerchant #:nodoc:
         self.class.name.scan(/\:\:(\w+)Gateway/).flatten.first
       end
       
-      # Return a String with the amount in the appropriate format
-      #--
-      # TODO Refactor this method. It's a tad on the ugly side.
       def amount(money)
         return nil if money.nil?
-        cents = money.respond_to?(:cents) ? money.cents : money 
+        cents = if money.respond_to?(:cents)
+          warn "Support for Money objects is deprecated and will be removed from a future release of ActiveMerchant. Please use an Integer value in cents"
+          money.cents
+        else
+          money
+        end
 
         if money.is_a?(String) or cents.to_i < 0
-          raise ArgumentError, 'money amount must be either a Money object or a positive integer in cents.' 
+          raise ArgumentError, 'money amount must be a positive Integer in cents.' 
         end
 
         if self.money_format == :cents
@@ -148,7 +150,6 @@ module ActiveMerchant #:nodoc:
         end
       end
       
-      # Ascertains the currency to be used on the money supplied.
       def currency(money)
         money.respond_to?(:currency) ? money.currency : self.default_currency
       end

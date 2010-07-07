@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../test_helper'
+require 'test_helper'
 
 class ActionViewHelperTest < Test::Unit::TestCase
   include ActiveMerchant::Billing::Integrations::ActionViewHelper
@@ -8,6 +8,8 @@ class ActionViewHelperTest < Test::Unit::TestCase
   include ActionView::Helpers::TagHelper
   include ActionView::Helpers::TextHelper
   
+  attr_accessor :output_buffer
+  
   def setup
     @controller = Class.new do
       attr_reader :url_for_options
@@ -16,6 +18,7 @@ class ActionViewHelperTest < Test::Unit::TestCase
       end      
     end
     @controller = @controller.new
+    @output_buffer = ''
   end
 
   

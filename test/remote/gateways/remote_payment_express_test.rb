@@ -1,11 +1,11 @@
-require File.dirname(__FILE__) + '/../../test_helper'
+require 'test_helper'
 
 class RemotePaymentExpressTest < Test::Unit::TestCase
 
   def setup
     @gateway = PaymentExpressGateway.new(fixtures(:payment_express))
     
-    @credit_card = credit_card
+    @credit_card = credit_card('4111111111111111')
 
     @options = { 
       :order_id => generate_unique_id,
@@ -21,7 +21,6 @@ class RemotePaymentExpressTest < Test::Unit::TestCase
     assert response = @gateway.purchase(@amount, @credit_card, @options)
     assert_equal "APPROVED", response.message
     assert_success response
-    assert response.test?
     assert_not_nil response.authorization
   end
   
@@ -29,7 +28,6 @@ class RemotePaymentExpressTest < Test::Unit::TestCase
     assert response = @gateway.purchase(@amount, @credit_card, @options)
     assert_equal "APPROVED", response.message
     assert_success response
-    assert response.test?
     assert_not_nil response.authorization
   end
   
@@ -37,14 +35,12 @@ class RemotePaymentExpressTest < Test::Unit::TestCase
     assert response = @gateway.purchase(176, @credit_card, @options)
     assert_equal 'DECLINED', response.message
     assert_failure response
-    assert response.test?
   end
   
   def test_successful_authorization
     assert response = @gateway.authorize(@amount, @credit_card, @options)
     assert_equal "APPROVED", response.message
     assert_success response
-    assert response.test?
     assert_not_nil response.authorization
   end
 
@@ -121,6 +117,20 @@ class RemotePaymentExpressTest < Test::Unit::TestCase
     assert_equal "APPROVED", purchase.message
     assert_success purchase
     assert_not_nil purchase.authorization
-  end  
+  end
+  
+  def test_store_and_authorize_and_capture
+    assert response = @gateway.store(@credit_card)
+    assert_success response
+    assert_equal "APPROVED", response.message
+    assert (token = response.token)
+
+    assert auth = @gateway.authorize(@amount, token, @options)
+    assert_success auth
+    assert_equal 'APPROVED', auth.message
+    assert auth.authorization
+    assert capture = @gateway.capture(@amount, auth.authorization)
+    assert_success capture
+  end
   
 end
